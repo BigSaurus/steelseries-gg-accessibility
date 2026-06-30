@@ -6,6 +6,12 @@ a mouse-only `<canvas>` graph that screen readers cannot touch. This tool turns
 the **10 EQ bands into real, keyboard-operable sliders** that drive the actual
 hardware — built and validated with **NVDA**.
 
+The injected panel is a **visible on-screen toolbar**, not a screen-reader-only
+overlay: screen-reader, keyboard-only, and sighted mouse users all get the same
+controls. Because it exposes the app's *real* control functions as standard
+elements, every setting added this way becomes a faster universal alternative UI
+for everyone — not an accessibility bolt-on.
+
 > Not affiliated with, endorsed by, or supported by SteelSeries. This is an
 > independent accessibility tool. It modifies a local SteelSeries GG install at
 > your own risk and is fully reversible (`uninstall.ps1`).
@@ -113,6 +119,13 @@ tools/
   cdp.py                     minimal CDP eval helper
   probes/                    the reverse-engineering probes used to map the EQ
 ```
+
+## Roadmap
+
+- [Per-band Frequency & Q](docs/roadmap-eq-freq-q.md) — finish the parametric EQ
+  (we expose Gain today; Freq/Q use the same controller).
+- [Accessible keyboard settings](docs/roadmap-keyboard-apex-pro-tkl.md) — apply the
+  same approach to the Apex Pro TKL (actuation, Rapid Trigger, lighting, bindings).
 
 ## License
 
