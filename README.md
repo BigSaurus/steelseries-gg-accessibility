@@ -122,6 +122,8 @@ tools/
 
 ## Roadmap
 
+- [Collapsible EQ panel](docs/roadmap-eq-collapsible-panel.md) — a button that
+  expands/collapses the sliders (disclosure pattern) instead of an always-on toolbar.
 - [Per-band Frequency & Q](docs/roadmap-eq-freq-q.md) — finish the parametric EQ
   (we expose Gain today; Freq/Q use the same controller).
 - [Accessible keyboard settings](docs/roadmap-keyboard-apex-pro-tkl.md) — apply the
