@@ -1,0 +1,15 @@
+# Built wrapper binary — ship source (wrapper.cs) + build_wrapper.ps1 instead,
+# so users compile locally and we never distribute an unsigned exe.
+launcher/SteelSeriesGGClient-wrapper.exe
+*.exe
+
+# Local machine path overrides (per-user; not for the repo).
+launcher/_paths.ps1
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs / scratch
+*.log
+*.err
