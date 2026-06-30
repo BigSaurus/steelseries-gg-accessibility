@@ -67,6 +67,16 @@ SteelSeries GG is an Electron app (Electron 31 / Chrome 126).
 
 ## Install
 
+**Quick (recommended):** one script does prerequisite checks, build, install, and
+login autostart. It self-elevates for the Program Files step.
+
+```powershell
+# from launcher\
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
+
+**Manual**, if you prefer step-by-step:
+
 ```powershell
 # from launcher\
 .\build_wrapper.ps1        # compile the wrapper from source
@@ -89,6 +99,27 @@ in the blank/orphaned state, then starts the injector. Open Engine → your head
 **Uninstall:** `launcher\uninstall.ps1` (restores the original binary) and
 `launcher\uninstall_autostart.ps1`.
 
+## Tested configuration
+
+Validated on: **SteelSeries GG 3.0.0** (Electron 31 / Chrome 126), **Arctis Nova
+Elite**, Windows 11, NVDA. It leans on GG's *minified* React internals
+(`ParametricEqualizerMini`, `updateBandMarkerParams`, the `Graph__Canvas` class),
+so a different GG version or a headset with a different EQ model may need the
+probes in `tools/probes/` re-run and the selectors in `tools/eq_sync.js` updated.
+`setup.ps1` prints the detected GG version and warns if it isn't 3.x.
+
+## Limitations
+
+- **EQ is 2.4 GHz-only.** On the Arctis Nova Elite the parametric EQ exists only
+  for the **2.4 GHz wireless** (base-station) connection. Selecting **Bluetooth**
+  removes the EQ entirely — Bluetooth audio isn't routed through the EQ DSP, so EQ
+  changes (and this panel) have no effect on Bluetooth playback. This is a
+  SteelSeries design choice, not a tool limitation.
+- **GG auto-updates** can replace the wrapper with a fresh real client, silently
+  disabling the tool until you re-run `install.ps1`.
+- The 2.4 GHz / Bluetooth connection selector is not itself screen-reader-friendly
+  (state lives in a CSS class); not yet remediated.
+
 ## Code signing
 
 Not required. The wrapper isn't signed and doesn't need to be — Windows runs it,
@@ -108,10 +139,35 @@ Signing) would remove SmartScreen prompts.
   could shift them; if the sliders stop appearing, re-run the probes in
   `tools/probes/` to re-map.
 
+## Troubleshooting
+
+**The panel doesn't appear.**
+1. Is the debug port up? `curl http://127.0.0.1:9222/json/version` (or open it in a
+   browser). Nothing → GG wasn't launched through the wrapper. Run
+   `launch_accessible.ps1`, or reboot so login starts GG via the wrapper.
+2. Is the injector running? Look for a `pythonw.exe` running `eq_daemon.py`.
+   Not there → run `install_autostart.ps1` (or `launch_accessible.ps1`).
+3. Are you on the **Equalizer** screen of a headset that has one, with the window
+   focused? The EQ tree only builds on focus, and only the 2.4 GHz connection has
+   an EQ (see Limitations).
+4. Right GG version? `setup.ps1` warns if it isn't 3.x. On a newer GG the internal
+   names may have moved — re-run `tools/probes/eq_probe4.js` to confirm the
+   controller/selectors, then update `tools/eq_sync.js`.
+
+**It worked, then stopped after a GG update.** The updater likely replaced the
+wrapper. Re-run `install.ps1` (or `setup.ps1`).
+
+**Antivirus flagged the wrapper.** It's an unsigned exe taking the client's name;
+allow it, or review `launcher/wrapper.cs` and rebuild yourself.
+
+**EQ changes don't affect my audio.** You're probably listening over **Bluetooth**,
+which has no EQ — use the 2.4 GHz wireless connection (see Limitations).
+
 ## Layout
 
 ```
 launcher/
+  setup.ps1                  one-shot: checks + build + install + autostart
   wrapper.cs                 flag-injecting launch shim (source)
   build_wrapper.ps1          compile it (csc)
   install.ps1 / uninstall.ps1
