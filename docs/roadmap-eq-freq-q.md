@@ -1,7 +1,10 @@
 # Roadmap: per-band Frequency & Q (and a universal EQ panel)
 
-**Status:** planned. **Builds on:** the shipped Gain sliders (`tools/eq_sync.js`).
-**Effort:** small–medium — the hard part (finding the EQ controller) is already done.
+**Status: SHIPPED.** `tools/eq_sync.js` now exposes per band: enable, gain,
+frequency, Q, and filter type. Frequency steps in semitones (PageUp/Dn =
+third-octave), Q in 0.1 steps. NVDA-validated (UIA sliders/comboboxes/checkboxes).
+Discovery: the app's setter does **no** bounds-checking, so the panel clamps to
+gain −12…+12, frequency 20–20000 Hz, Q 0.3–10 itself. Notes below kept for history.
 
 ## Why
 

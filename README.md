@@ -3,8 +3,9 @@
 Makes **SteelSeries GG usable with a screen reader**, with first focus on the
 **parametric equalizer** (validated on an Arctis Nova Elite), whose bands ship as
 a mouse-only `<canvas>` graph that screen readers cannot touch. This tool turns
-the **10 EQ bands into real, keyboard-operable sliders** that drive the actual
-hardware — built and validated with **NVDA**.
+the **10 EQ bands into real, keyboard-operable controls** that drive the actual
+hardware — built and validated with **NVDA**. Every band exposes **gain,
+frequency, Q, filter type, and an enable toggle** (a complete parametric EQ).
 
 The injected panel is a **visible on-screen toolbar**, not a screen-reader-only
 overlay: screen-reader, keyboard-only, and sighted mouse users all get the same
@@ -39,15 +40,19 @@ SteelSeries GG is an Electron app (Electron 31 / Chrome 126).
 
 2. **Drive the app's own EQ functions.** The EQ is owned by a React component
    (`ParametricEqualizerMini`) whose props expose `bandMarkers` (10 bands) and the
-   real setters `updateBandMarkerParams(index, {gain})` and
-   `setCurrentBandMarkerIdx(index)`. The injection finds this component by walking
-   the React fiber up from the canvas — no private APIs, just the app's own state.
+   real setters `updateBandMarkerParams(index, {gain, frequency, qFactor,
+   filterType, enabled})` and `setCurrentBandMarkerIdx(index)`. The injection finds
+   this component by walking the React fiber up from the canvas — no private APIs,
+   just the app's own state. (The app does no bounds-checking, so the panel clamps
+   to sane ranges itself.)
 
-3. **Inject accessible sliders.** `tools/eq_sync.js` builds a `role=region`
-   "Accessible Equalizer" panel of 10 `role=slider` controls
-   (`aria-label="32 Hz band gain"`, range −12…+12 dB, live `aria-valuetext`).
-   Arrow = ±1 dB · PageUp/Dn = ±3 · Home = +12 · End = −12 · Delete = reset.
-   Chromium maps the ARIA into UIA sliders, so NVDA reads and operates them.
+3. **Inject accessible controls.** `tools/eq_sync.js` builds a `role=region`
+   "Accessible EQ" panel: per band a `role=group` with an **enable** checkbox,
+   **gain** / **frequency** / **Q** `role=slider`s, and a **filter-type** select.
+   Ranges: gain −12…+12 dB (±1, PageUp/Dn ±3); frequency 20 Hz–20 kHz stepped in
+   semitones (PageUp/Dn = third-octave); Q 0.3–10 (±0.1). Home/End = max/min,
+   Delete = reset to default. Chromium maps the ARIA into UIA sliders/comboboxes/
+   checkboxes, so NVDA reads and operates them.
 
 4. **Persist it.** `tools/eq_daemon.py` polls the debug port and re-applies the
    panel to every device page, surviving reloads and re-opened windows.
@@ -124,8 +129,8 @@ tools/
 
 - [Collapsible EQ panel](docs/roadmap-eq-collapsible-panel.md) — a button that
   expands/collapses the sliders (disclosure pattern) instead of an always-on toolbar.
-- [Per-band Frequency & Q](docs/roadmap-eq-freq-q.md) — finish the parametric EQ
-  (we expose Gain today; Freq/Q use the same controller).
+- ~~Per-band Frequency & Q~~ — **done**: gain, frequency, Q, filter type, and
+  enable are all exposed now ([notes](docs/roadmap-eq-freq-q.md)).
 - [Accessible keyboard settings](docs/roadmap-keyboard-apex-pro-tkl.md) — apply the
   same approach to the Apex Pro TKL (actuation, Rapid Trigger, lighting, bindings).
 
