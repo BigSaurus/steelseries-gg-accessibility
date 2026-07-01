@@ -38,7 +38,7 @@ assume control internals (function/prop names, ranges) before probing.
      labeled H/S/V sliders).
    - **Per-key binding / macros** — expose the key grid as a navigable list
      ("Escape: …", "F1: …") with editable actions. Largest/most complex.
-5. **Generalize the injector into a dispatcher.** Today `eq_daemon.py` injects
+5. **Generalize the injector into a dispatcher.** Today `eq_daemon.exe` injects
    `eq_sync.js` on every `deviceConfig` page. Refactor to a small **per-device
    module map**: inspect the page's device id and inject the matching panel
    (`eq_sync.js` for headsets, `keyboard_sync.js` for the Apex, …). Keep each

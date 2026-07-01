@@ -1,7 +1,7 @@
 //
 //  Accessible-EQ injector daemon for SteelSeries GG (C# / no runtime deps).
 //
-//  Port of eq_daemon.py. Polls the CDP endpoint and evaluates eq_sync.js on
+//  Polls the CDP endpoint and evaluates eq_sync.js on
 //  every "deviceConfig" page, so the accessible band controls survive reloads,
 //  SPA navigation, and newly opened device windows. Uses only the .NET Framework
 //  that ships with Windows (ClientWebSocket + JavaScriptSerializer), so an end

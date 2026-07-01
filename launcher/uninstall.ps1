@@ -12,9 +12,7 @@ Start-Sleep -Seconds 2
 if (Get-Process -Name SteelSeriesGGClient -ErrorAction SilentlyContinue) { throw 'client still running; aborting.' }
 
 Write-Host '== Stopping injector daemon =='
-Get-CimInstance Win32_Process -Filter "Name='python.exe' OR Name='pythonw.exe'" |
-    Where-Object { $_.CommandLine -match 'eq_daemon.py' } |
-    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+Get-Process -Name $DaemonName -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 
 Write-Host '== Restoring real binary =='
 if (Test-Path $ClientExe) { Remove-Item -LiteralPath $ClientExe -Force }   # the wrapper

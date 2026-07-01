@@ -83,16 +83,16 @@ powershell -ExecutionPolicy Bypass -File .\setup.ps1
 
 ```powershell
 # from launcher\
-.\build_wrapper.ps1        # compile the wrapper from source
+.\build.ps1                # compile the wrapper + daemon from source (csc)
 .\install.ps1              # swap in the wrapper (admin), relaunch GG accessibly
 .\install_autostart.ps1    # run the injector at login (optional but recommended)
 ```
 
-If your Python isn't on `PATH`, create `launcher\_paths.ps1` (gitignored):
+If SteelSeries GG isn't in the default location, create `launcher\_paths.ps1`
+(gitignored) to point at it:
 
 ```powershell
-$PythonW = 'C:\path\to\python\pythonw.exe'
-$Python  = 'C:\path\to\python\python.exe'
+$GGDir = 'D:\Games\SteelSeries\GG'
 ```
 
 **Launch accessibly** with `launcher\launch_accessible.ps1` (make a desktop

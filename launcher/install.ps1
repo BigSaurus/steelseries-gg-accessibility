@@ -5,7 +5,7 @@
 # gets --remote-debugging-port + --force-renderer-accessibility. Idempotent:
 # safe to re-run (it never clobbers the saved real binary).
 #
-# Build the wrapper first (build_wrapper.ps1). Reverse with uninstall.ps1.
+# Build the native pieces first (build.ps1). Reverse with uninstall.ps1.
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '_lib.ps1')
