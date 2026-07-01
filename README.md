@@ -54,16 +54,20 @@ SteelSeries GG is an Electron app (Electron 31 / Chrome 126).
    Delete = reset to default. Chromium maps the ARIA into UIA sliders/comboboxes/
    checkboxes, so NVDA reads and operates them.
 
-4. **Persist it.** `tools/eq_daemon.py` polls the debug port and re-applies the
-   panel to every device page, surviving reloads and re-opened windows.
+4. **Persist it.** `tools/eq_daemon.exe` (built from `eq_daemon.cs`, no runtime
+   deps) polls the debug port and re-applies the panel to every device page,
+   surviving reloads and re-opened windows.
 
 ## Requirements
 
-- Windows, SteelSeries GG installed (default `C:\Program Files\SteelSeries\GG`).
-- .NET Framework (for `csc.exe`, already present on Windows) to build the wrapper.
-- Python 3 with `websocket-client` and `uiautomation`:
-  `pip install websocket-client uiautomation`
-- A screen reader (NVDA recommended).
+**To use it — nothing but Windows + SteelSeries GG.** The wrapper and the injector
+daemon are small C# programs built from source by the `csc` compiler that ships
+with the .NET Framework (already on every Windows machine). No Python, no runtime
+to install. A screen reader (NVDA recommended) if that's the point.
+
+**To hack on it** (reverse-engineering probes, manual CDP eval, UIA audits) you'll
+want Python 3 with `websocket-client` and `uiautomation` — but end users never
+run those.
 
 ## Install
 
@@ -145,7 +149,7 @@ Signing) would remove SmartScreen prompts.
 1. Is the debug port up? `curl http://127.0.0.1:9222/json/version` (or open it in a
    browser). Nothing → GG wasn't launched through the wrapper. Run
    `launch_accessible.ps1`, or reboot so login starts GG via the wrapper.
-2. Is the injector running? Look for a `pythonw.exe` running `eq_daemon.py`.
+2. Is the injector running? Look for `eq_daemon.exe` in Task Manager.
    Not there → run `install_autostart.ps1` (or `launch_accessible.ps1`).
 3. Are you on the **Equalizer** screen of a headset that has one, with the window
    focused? The EQ tree only builds on focus, and only the 2.4 GHz connection has
@@ -169,16 +173,16 @@ which has no EQ — use the 2.4 GHz wireless connection (see Limitations).
 launcher/
   setup.ps1                  one-shot: checks + build + install + autostart
   wrapper.cs                 flag-injecting launch shim (source)
-  build_wrapper.ps1          compile it (csc)
+  build.ps1                  compile wrapper.cs + eq_daemon.cs with csc
   install.ps1 / uninstall.ps1
   install_autostart.ps1 / uninstall_autostart.ps1
   launch_accessible.ps1      clean restart + start daemon
   _lib.ps1                   shared path resolver
 tools/
   eq_sync.js                 the accessible-EQ injection (idempotent)
-  eq_daemon.py               keeps it applied
-  cdp.py                     minimal CDP eval helper
-  probes/                    the reverse-engineering probes used to map the EQ
+  eq_daemon.cs               injector daemon source -> eq_daemon.exe (no deps)
+  cdp.py                     dev-only CDP eval helper (Python)
+  probes/                    dev-only reverse-engineering probes (Python)
 ```
 
 ## Roadmap

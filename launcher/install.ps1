@@ -10,7 +10,7 @@
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '_lib.ps1')
 
-if (-not (Test-Path $WrapperExe)) { throw "wrapper not built: $WrapperExe (run build_wrapper.ps1 first)" }
+if (-not (Test-Path $WrapperExe)) { throw "wrapper not built: $WrapperExe (run build.ps1 first)" }
 if (-not (Test-Path $ClientExe) -and -not (Test-Path $RealExe)) { throw "SteelSeries client not found in $GGDir" }
 
 Write-Host '== Stopping SteelSeries stack (watchdog first) =='

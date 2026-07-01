@@ -1,7 +1,8 @@
 # One-shot installer for the SteelSeries GG accessible equalizer.
-# Checks prerequisites, builds the wrapper, installs it, and registers the
-# login autostart. Self-elevates for the Program Files step. Reversible via
-# uninstall.ps1 + uninstall_autostart.ps1.
+# Checks prerequisites, builds the native pieces from source, installs the
+# wrapper, and registers the login autostart. Self-elevates for the Program
+# Files step. No Python or other runtime is required — just Windows + GG.
+# Reversible via uninstall.ps1 + uninstall_autostart.ps1.
 #
 #   powershell -ExecutionPolicy Bypass -File .\setup.ps1
 
@@ -21,7 +22,6 @@ if (-not $admin) {
 
 Write-Host '== Checking prerequisites ==' -ForegroundColor Cyan
 
-# SteelSeries GG present?
 if (-not (Test-Path $ClientExe) -and -not (Test-Path $RealExe)) {
     throw "SteelSeries GG not found in $GGDir. Install GG first, or set `$GGDir in launcher\_paths.ps1."
 }
@@ -34,21 +34,8 @@ if ($ver -and $ver -notmatch '^3\.') {
     Write-Warning "This tool was validated on GG 3.x. On $ver the app's internal names may differ; if the accessible panel never appears, the React selectors in tools/eq_sync.js likely need re-mapping (see tools/probes/)."
 }
 
-# Python with websocket-client?
-if (-not $Python) {
-    throw "No Python found on PATH. Install Python 3, or set `$Python/`$PythonW in launcher\_paths.ps1."
-}
-Write-Host "  Python: $Python"
-& $Python -c "import websocket" 2>$null
-if ($LASTEXITCODE -ne 0) {
-    Write-Host '  websocket-client missing; installing...' -ForegroundColor Yellow
-    & $Python -m pip install --quiet websocket-client
-    if ($LASTEXITCODE -ne 0) { throw 'Failed to pip install websocket-client.' }
-}
-Write-Host '  websocket-client: OK'
-
-Write-Host '== Building wrapper ==' -ForegroundColor Cyan
-& (Join-Path $PSScriptRoot 'build_wrapper.ps1')
+Write-Host '== Building native pieces (wrapper + daemon) ==' -ForegroundColor Cyan
+& (Join-Path $PSScriptRoot 'build.ps1')
 
 Write-Host '== Installing wrapper ==' -ForegroundColor Cyan
 & (Join-Path $PSScriptRoot 'install.ps1')

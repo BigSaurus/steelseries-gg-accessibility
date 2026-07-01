@@ -2,8 +2,8 @@
 #   1. Clean teardown of every SteelSeries process (avoids the tangled-orphan
 #      state that leaves the dashboard blank).
 #   2. Start GGEZ fresh -> host -> wrapper -> real client with the debug flags.
-#   3. Start the accessible-EQ injector daemon.
-# Requires the wrapper to be installed (install.ps1). Reversible via uninstall.ps1.
+#   3. Start the accessible-EQ injector daemon (eq_daemon.exe).
+# Requires the wrapper + daemon to be built and installed. Reversible via uninstall.ps1.
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '_lib.ps1')
@@ -29,11 +29,9 @@ for ($i = 0; $i -lt 40; $i++) {
 if (-not $ok) { Write-Warning 'Debug port never came up; GG may still be starting.' }
 
 Write-Host '== Starting accessible-EQ injector daemon =='
-Get-CimInstance Win32_Process -Filter "Name='pythonw.exe' OR Name='python.exe'" |
-    Where-Object { $_.CommandLine -match 'eq_daemon.py' } |
-    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-if (-not $PythonW) { Write-Warning 'No Python found for the daemon (set one in _paths.ps1).'; exit 1 }
-Start-Process -FilePath $PythonW -ArgumentList $Daemon -WorkingDirectory $ToolsDir -WindowStyle Hidden
+if (-not (Test-Path $DaemonExe)) { Write-Warning "Daemon not built ($DaemonExe). Run build.ps1."; exit 1 }
+Get-Process -Name $DaemonName -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Process -FilePath $DaemonExe -WorkingDirectory $ToolsDir -WindowStyle Hidden
 
 Write-Host 'Done. SteelSeries GG is launching in accessible mode.'
-Write-Host 'Open Engine -> your headset -> Equalizer; the accessible band sliders appear automatically.'
+Write-Host 'Open Engine -> your headset -> Equalizer; the accessible controls appear automatically.'
